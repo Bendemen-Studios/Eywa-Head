@@ -51,16 +51,6 @@ public final class EywaHead extends JavaPlugin implements Listener {
         DeathContext context = new DeathContext(player.getUniqueId(), player.getLocation().clone(), System.currentTimeMillis());
         deaths.put(player.getUniqueId(), context);
 
-        // Run after other death-event listeners so inventory-retention plugins cannot leave
-        // keepInventory enabled on the event. AxGraves still receives the normal drop list.
-        Bukkit.getScheduler().runTask(this, () -> {
-            if (!player.isOnline()) return;
-            player.getInventory().clear();
-            player.getInventory().setArmorContents(null);
-            player.getInventory().setExtraContents(null);
-            player.setItemOnCursor(null);
-        });
-
         Bukkit.getScheduler().runTaskLater(this, () -> deaths.computeIfPresent(player.getUniqueId(), (id, current) -> current == context && current.head == null ? null : current), 100L);
     }
 
