@@ -43,6 +43,8 @@ public final class EywaHead extends JavaPlugin implements Listener {
 
     @org.bukkit.event.EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
+        // Keep normal death-drop handling enabled so HeadDrop can spawn the original head.
+        event.setKeepInventory(false);
         Player player = event.getEntity();
         DeathContext context = new DeathContext(player.getUniqueId(), player.getLocation().clone(), System.currentTimeMillis());
         deaths.put(player.getUniqueId(), context);
