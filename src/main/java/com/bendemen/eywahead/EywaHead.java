@@ -41,8 +41,11 @@ public final class EywaHead extends JavaPlugin implements Listener {
 
     @Override public void onDisable() { deaths.clear(); }
 
-    @org.bukkit.event.EventHandler(priority = EventPriority.LOWEST)
+    @org.bukkit.event.EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
+        // AxGraves must receive the normal death drops. Prevent another plugin or gamerule
+        // from leaving the inventory on the player while AxGraves also stores the items.
+        event.setKeepInventory(false);
         Player player = event.getEntity();
         DeathContext context = new DeathContext(player.getUniqueId(), player.getLocation().clone(), System.currentTimeMillis());
         deaths.put(player.getUniqueId(), context);
