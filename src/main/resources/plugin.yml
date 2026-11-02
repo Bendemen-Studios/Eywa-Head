@@ -1,0 +1,7 @@
+name: Eywa-Head
+version: '${project.version}'
+main: com.bendemen.eywahead.EywaHead
+api-version: '1.20'
+description: Preserves HeadDrop's original player head inside the matching AxGraves grave.
+authors: [Bendemen-Studios]
+softdepend: [HeadDrop, AxGraves]
