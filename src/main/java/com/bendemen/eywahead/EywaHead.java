@@ -97,14 +97,27 @@ public final class EywaHead extends JavaPlugin implements Listener {
             if (context.head == null || context.grave == null) return;
             try {
                 Inventory inventory = (Inventory) context.grave.getClass().getMethod("getGui").invoke(context.grave);
-                if (!inventory.addItem(context.head.clone()).isEmpty()) {
+
+                // AxGraves may already have stored the HeadDrop head as part of the death drops.
+                // Do not add a second copy; just remove the separate world entity.
+                boolean alreadyStored = false;
+                for (ItemStack existing : inventory.getContents()) {
+                    if (existing != null && existing.isSimilar(context.head)
+                            && existing.getAmount() >= context.head.getAmount()) {
+                        alreadyStored = true;
+                        break;
+                    }
+                }
+
+                if (!alreadyStored && !inventory.addItem(context.head.clone()).isEmpty()) {
                     getLogger().warning("Grave inventory had no room for " + context.playerId + "'s HeadDrop head; leaving the original item untouched.");
                     return;
                 }
+
                 if (context.itemEntity != null && context.itemEntity.isValid()) context.itemEntity.remove();
                 context.head = null;
                 deaths.remove(context.playerId, context);
-                getLogger().info("Stored original HeadDrop head in AxGraves grave for " + context.playerId + ".");
+                getLogger().info((alreadyStored ? "HeadDrop head was already stored; removed duplicate world item for " : "Stored original HeadDrop head in AxGraves grave for ") + context.playerId + ".");
             } catch (ReflectiveOperationException | RuntimeException exception) {
                 getLogger().severe("Could not insert HeadDrop head into AxGraves grave: " + exception.getMessage());
             }
